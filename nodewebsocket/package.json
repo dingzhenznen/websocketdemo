@@ -1,0 +1,13 @@
+{
+  "name": "nodewebsocket-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demo based on theturtle32/WebSocket-Node examples",
+  "scripts": {
+    "server": "node server.js",
+    "client": "node client.js"
+  },
+  "dependencies": {
+    "websocket": "^1.0.35"
+  }
+}

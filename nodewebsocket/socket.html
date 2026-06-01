@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Demo</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+
+      input {
+        width: 320px;
+        padding: 8px;
+      }
+
+      button {
+        padding: 8px 14px;
+        margin-left: 8px;
+      }
+
+      pre {
+        margin-top: 20px;
+        padding: 12px;
+        background: #f5f5f5;
+        border-radius: 8px;
+        min-height: 220px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>WebSocket Demo</h1>
+    <p>点击连接后，页面会通过原生 WebSocket 连到服务端。</p>
+
+    <div>
+      <button id="connect">连接</button>
+      <button id="disconnect">断开</button>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <input id="message" type="text" placeholder="输入要发送的内容" />
+      <button id="send">发送消息</button>
+    </div>
+
+    <pre id="log"></pre>
+
+    <script>
+      const log = document.getElementById("log");
+      const connectButton = document.getElementById("connect");
+      const disconnectButton = document.getElementById("disconnect");
+      const sendButton = document.getElementById("send");
+      const input = document.getElementById("message");
+      const socketUrl = window.location.host
+        ? `ws://${window.location.host}/`
+        : "ws://127.0.0.1:8080/";
+
+      let socket;
+
+      function appendLog(message) {
+        log.textContent += `${message}\n`;
+      }
+
+      function connectSocket() {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          appendLog("socket 已连接");
+          return;
+        }
+
+        socket = new WebSocket(socketUrl, "echo-protocol");
+        appendLog(`connecting: ${socketUrl}`);
+
+        socket.addEventListener("open", () => {
+          appendLog(`connected: ${socketUrl}`);
+        });
+
+        socket.addEventListener("message", (event) => {
+          appendLog(`received: ${event.data}`);
+        });
+
+        socket.addEventListener("close", () => {
+          appendLog("disconnected");
+        });
+
+        socket.addEventListener("error", () => {
+          appendLog(`socket error: ${socketUrl}`);
+        });
+      }
+
+      connectButton.addEventListener("click", connectSocket);
+
+      disconnectButton.addEventListener("click", () => {
+        if (socket) {
+          socket.close();
+        }
+      });
+
+      sendButton.addEventListener("click", () => {
+        const value = input.value.trim() || "hello from browser";
+
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          appendLog("请先连接 socket");
+          return;
+        }
+
+        socket.send(value);
+        appendLog(`sent: ${value}`);
+      });
+    </script>
+  </body>
+</html>

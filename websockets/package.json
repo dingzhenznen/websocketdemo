@@ -1,0 +1,13 @@
+{
+  "name": "websockets-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal WebSocket demo using ws",
+  "scripts": {
+    "server": "node server.js",
+    "client": "node client.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}

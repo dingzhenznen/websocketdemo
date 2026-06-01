@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket.IO Demo</title>
+  </head>
+  <body>
+    <h1>Socket.IO Demo</h1>
+    <input id="message" type="text" placeholder="输入要发送的内容" />
+    <button id="send">发送 eventB</button>
+    <pre id="log"></pre>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const log = document.getElementById("log");
+      const input = document.getElementById("message");
+      const button = document.getElementById("send");
+
+      function appendLog(message) {
+        log.textContent += `${message}\n`;
+      }
+
+      const socket = io(window.location.origin);
+
+      socket.on("connect", () => {
+        appendLog(`connected: ${socket.id}`);
+      });
+
+      socket.on("eventA", (res) => {
+        appendLog(`eventA: ${JSON.stringify(res)}`);
+      });
+
+      socket.on("disconnect", () => {
+        appendLog("disconnected");
+      });
+
+      button.addEventListener("click", () => {
+        const value = input.value.trim();
+
+        socket.emit("eventB", {
+          message: value || "hello from browser",
+          time: new Date().toISOString()
+        });
+      });
+    </script>
+  </body>
+</html>
