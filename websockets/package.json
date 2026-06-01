@@ -5,7 +5,9 @@
   "description": "Minimal WebSocket demo using ws",
   "scripts": {
     "server": "node server.js",
-    "client": "node client.js"
+    "client": "node client.js",
+    "stdout-server": "node stdout-server.js",
+    "stdout-client": "node stdout-client.js"
   },
   "dependencies": {
     "ws": "^8.18.3"
