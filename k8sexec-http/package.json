@@ -1,0 +1,13 @@
+{
+  "name": "k8sexec-http-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Express demo that proxies HTTP exec requests to Kubernetes pods/exec",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
+    "express": "^4.21.2"
+  }
+}
