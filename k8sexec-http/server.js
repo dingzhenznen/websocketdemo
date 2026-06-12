@@ -41,7 +41,7 @@ function createK8sExec(kubeconfigRaw) {
   return {
     namespace,
     currentContext,
-    k8sExec: new k8s.Exec(kc),
+    k8sExec: new k8s.Exec(kc).exec(),
     k8sCore: kc.makeApiClient(k8s.CoreV1Api)
   };
 }

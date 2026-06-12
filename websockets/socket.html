@@ -80,6 +80,7 @@
           appendLog(`received: ${event.data}`);
         });
 
+        
         socket.addEventListener("close", () => {
           appendLog("disconnected");
         });

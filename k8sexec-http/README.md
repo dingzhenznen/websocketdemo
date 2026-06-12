@@ -163,3 +163,14 @@ PY
 - 外层通过 Express `res` 把结果回给调用方
 
 只是这里执行的是通用 `command`，不是固定的 `dd if=...`
+
+
+
+curl -X POST http://127.0.0.1:8096/exec \
+    -H 'content-type: application/json' \
+    -d '{
+      "namespace":"kube-system",
+      "podName":"coredns-5d78c9869d-4jhj4",
+      "containerName":"coredns",
+      "command":["/coredns","-version"]
+    }'

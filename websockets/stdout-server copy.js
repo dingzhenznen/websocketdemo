@@ -11,8 +11,7 @@ function sendJson(socket, payload) {
   socket.send(JSON.stringify(payload));
 }
 
-// 只负责创建子进程，返回 child（包含 stdin, stdout, stderr 流）
-function startDemoProcess(stdout, stderr) {
+function startDemoProcess(socket) {
   const child = spawn(process.execPath, ["-e", `
 let count = 0;
 const timer = setInterval(() => {
@@ -30,16 +29,13 @@ const timer = setInterval(() => {
     stdio: ["pipe", "pipe", "pipe"]
   });
 
-  child.stdout.pipe(stdout);
-  child.stderr.pipe(stderr);
-
-  return child;
-}
-
-// 处理子进程的流（stdout, stderr）并通过 WebSocket 发送
-function handleProcessStreams(child, socket) {
   // 创建 PassThrough 流作为中间层
+  const stdoutPass = new PassThrough();
+  const stderrPass = new PassThrough();
 
+  // 将子进程输出导入 PassThrough
+  child.stdout.pipe(stdoutPass);
+  child.stderr.pipe(stderrPass);
 
   // 监听 PassThrough 的事件
   stdoutPass.on("data", (chunk) => {
@@ -89,7 +85,7 @@ function handleProcessStreams(child, socket) {
     }
   });
 
-  return { stdoutPass, stderrPass };
+  return child;
 }
 
 wss.on("listening", () => {
@@ -104,11 +100,10 @@ wss.on("connection", (socket, request) => {
   });
 
   let child;
-  let streams;
 
   socket.on("message", (data) => {
     let frame;
-    console.log(`onmessage1111: ${data.toString()}`);
+    console.log(`onmessage: ${data.toString()}`);
     try {
       frame = JSON.parse(data.toString());
     } catch {
@@ -123,60 +118,8 @@ wss.on("connection", (socket, request) => {
       }
       sendJson(socket, { type: "started" });
       console.log("starting111111");
-
-      const stdoutPass = new PassThrough();
-      const stderrPass = new PassThrough();
-      child = startDemoProcess(stdoutPass,stderrPass);
-
-      stdoutPass.on("data", (chunk) => {
-        console.log("[PassThrough stdout] received:", chunk.toString().trim());
-        if (socket.readyState === WebSocket.OPEN) {
-          sendJson(socket, { type: "stdout", data: chunk.toString() });
-        }
-      });
-    
-      stderrPass.on("data", (chunk) => {
-        console.log("[PassThrough stderr] received:", chunk.toString().trim());
-        if (socket.readyState === WebSocket.OPEN) {
-          sendJson(socket, { type: "stderr", data: chunk.toString() });
-        }
-      });
-    
-      // 监听 PassThrough 的其他事件
-      stdoutPass.on("end", () => {
-        console.log("[PassThrough stdout] ended");
-      });
-    
-      stderrPass.on("end", () => {
-        console.log("[PassThrough stderr] ended");
-      });
-    
-      stdoutPass.on("error", (error) => {
-        console.error("[PassThrough stdout] error:", error.message);
-      });
-    
-      stderrPass.on("error", (error) => {
-        console.error("[PassThrough stderr] error:", error.message);
-      });
-    
-      child.on("close", (code) => {
-        console.log(`[Child process] exited with code ${code}`);
-        if (socket.readyState === WebSocket.OPEN) {
-          sendJson(socket, { type: "status", code });
-          socket.close(1000, "process finished");
-        }
-      });
-    
-      child.on("error", (error) => {
-        console.error("[Child process] error:", error.message);
-        if (socket.readyState === WebSocket.OPEN) {
-          sendJson(socket, { type: "error", message: error.message });
-          socket.close(1011, "process error");
-        }
-      });
-    
-      // streams = handleProcessStreams(child, socket);
-      // return;
+      child = startDemoProcess(socket);
+      return;
     }
 
     if (frame.type === "stdin") {
