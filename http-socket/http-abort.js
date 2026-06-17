@@ -20,6 +20,10 @@ const server = http.createServer((req, res) => {
     console.log('req aborted - 请求被中止');
   });
 
+  req.on('aborted', () => {
+    console.log('req aborted - 读取请求被中止');
+  });  
+
 
   setTimeout(() => {
     res.end('ddd');

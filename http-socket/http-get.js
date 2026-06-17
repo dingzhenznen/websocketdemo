@@ -1,6 +1,7 @@
 const http = require('http');
 http.get('http://nodejs.org/dist/index.json', (res) => {
   const { statusCode } = res;
+  console.log( res);
   const contentType = res.headers['content-type'];
 
   let error;
