@@ -207,6 +207,10 @@ function runCommand(command) {
             });
           }
         });
+
+        ws.on('close', () => {
+          console.log('[WebSocket]222 监听到连接关闭');
+        });
       });
     });
 }

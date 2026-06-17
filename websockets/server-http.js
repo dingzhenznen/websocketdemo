@@ -18,6 +18,19 @@ const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (socket) => {
   socket.send("connected");
+
+  socket.on("message", (message) => {
+    const text = message.toString();
+    console.log(`received: ${text}`);
+
+    socket.send(
+      JSON.stringify({
+        type: "echo",
+        message: text,
+        time: new Date().toISOString()
+      })
+    );
+  });
 });
 
 server.listen(8092, () => {
