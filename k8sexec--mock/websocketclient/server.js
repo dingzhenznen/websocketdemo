@@ -104,6 +104,8 @@ function executeCommandViaWebSocket(command, stdoutPass, stderrPass) {
     });
 
     // 将 WebSocket 消息转发到 PassThrough 流
+
+    // ws 在上面 resolve 出去了，监听 WebSocket 消息 可以放在外层的 获取promise 结果的地方吗
     ws.on('message', (data) => {
       try {
         const msg = JSON.parse(data.toString());
@@ -193,6 +195,7 @@ function runCommand(command) {
         }, 30000);
 
         // 在 then 方法中监听 stdoutPass 的 end 事件
+        // 为什么在这里监听 end 不是在上面创建 stdoutPass 的时候监听
         stdoutPass.on('end', () => {
           console.log('[PassThrough stdout] 流结束');
           clearTimeout(timeout);

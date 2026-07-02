@@ -1,0 +1,20 @@
+{
+  "name": "opensandbox-node-pty-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal node-pty demo",
+  "main": "pty-demo.js",
+  "scripts": {
+    "start": "node pty-demo.js",
+    "smoke": "node smoke.js",
+    "web": "node server.js",
+    "web:smoke": "node web-smoke.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "node-pty": "^1.0.0",
+    "ws": "^8.18.3",
+    "xterm": "5.3.0",
+    "@xterm/addon-fit": "^0.10.0"
+  }
+}
