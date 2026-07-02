@@ -42,6 +42,7 @@ wss.on('connection', (ws) => {
 
   term.onData((data) => {
     if (ws.readyState === WebSocket.OPEN) {
+      console.log('[WebSocket] Sending output to client---',data);
       ws.send(JSON.stringify({ type: 'output', data }));
     }
   });
@@ -62,6 +63,7 @@ wss.on('connection', (ws) => {
     }
 
     if (message.type === 'input' && typeof message.data === 'string') {
+      console.log('[WebSocket] Received input from client---',message.data);
       term.write(message.data);
       return;
     }
